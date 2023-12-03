@@ -20,14 +20,17 @@ fn part1() {
     let games = parse_games();
 
     // determine valid games
-    let reds: u32 = 12;
-    let greens: u32 = 13;
-    let blues: u32 = 14;
+    let limit = Count {
+        red: 12,
+        green: 13,
+        blue: 14,
+    };
     let mut sum_of_valid_game_numbers: u32 = 0;
+
     for game in games {
         let mut valid = true;
         for set in game.sets {
-            if set.red > reds || set.green > greens || set.blue > blues {
+            if set.red > limit.red || set.green > limit.green || set.blue > limit.blue {
                 valid = false;
             }
         }
@@ -35,24 +38,33 @@ fn part1() {
             sum_of_valid_game_numbers += game.number;
         }
     }
-    println!("sum_of_valid_game_numbers: {}", sum_of_valid_game_numbers);
+    println!("sum of valid game numbers: {}", sum_of_valid_game_numbers);
 }
 
 fn part2() {
     let games = parse_games();
 
-    // determine fewest numbers 
+    // determine fewest numbers
     let mut powers: Vec<u32> = vec![];
+
     for game in games {
-        let mut red: u32 = 0;
-        let mut green: u32 = 0;
-        let mut blue: u32 = 0;
+        let mut count = Count {
+            red: 0,
+            green: 0,
+            blue: 0,
+        };
         for set in game.sets {
-            if set.red > red { red = set.red; }
-            if set.green > green { green = set.green; }
-            if set.blue > blue { blue = set.blue; }
+            if set.red > count.red {
+                count.red = set.red;
+            }
+            if set.green > count.green {
+                count.green = set.green;
+            }
+            if set.blue > count.blue {
+                count.blue = set.blue;
+            }
         }
-        powers.push(red*green*blue);
+        powers.push(count.red * count.green * count.blue);
     }
 
     let sum: u32 = powers.iter().sum();
@@ -64,7 +76,6 @@ fn parse_games() -> Vec<Game> {
     let lines: Vec<&str> = include_str!("./input.txt").lines().collect();
 
     for line in lines {
-
         // get game number
         let colon_position = line.find(':').unwrap();
         let game_name = &line[0..colon_position];
@@ -74,7 +85,7 @@ fn parse_games() -> Vec<Game> {
         // get set counts
         let sets_slice = &line[(colon_position + 1)..];
         let sets_slice_vec: Vec<&str> = sets_slice.split("; ").collect();
-        
+
         for set in sets_slice_vec {
             game_sets.push(get_count(set));
         }
@@ -102,9 +113,9 @@ fn get_count(set: &str) -> Count {
     for q in qtys {
         let val: Vec<&str> = q.trim_start().split(' ').collect();
         match val[1].trim() {
-            "red" => { count.red += val[0].parse::<u32>().unwrap() },
-            "green" => { count.green += val[0].parse::<u32>().unwrap() }, 
-            "blue" => { count.blue += val[0].parse::<u32>().unwrap() },
+            "red" => count.red += val[0].parse::<u32>().unwrap(),
+            "green" => count.green += val[0].parse::<u32>().unwrap(),
+            "blue" => count.blue += val[0].parse::<u32>().unwrap(),
             _ => break,
         }
     }
